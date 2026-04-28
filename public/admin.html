@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Admin Pêcherie</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(180deg, #e6f4ff, #ffffff);
+    text-align: center;
+    color: #0b2a4a;
+}
+
+/* 🔙 barre du haut */
+.topbar {
+    display: flex;
+    justify-content: flex-start;
+    padding: 10px 20px;
+}
+
+.topbar button {
+    background: #1e88e5;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+h1 {
+    margin: 10px 0;
+    color: #0b4f8a;
+}
+
+.container {
+    background: white;
+    max-width: 500px;
+    margin: auto;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+input {
+    width: 80%;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background: #1e88e5;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.resa {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.delete {
+    color: red;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <button onclick="window.location.href='index.html'">⬅ Retour</button>
+</div>
+
+<h1>Administration</h1>
+
+<div class="container" id="loginBox">
+    <h3>Connexion</h3>
+    <input id="pass" type="password" placeholder="Mot de passe">
+    <br>
+    <button onclick="login()">Se connecter</button>
+</div>
+
+<div class="container" id="dataBox" style="display:none;">
+    <h3>Réservations</h3>
+    <div id="data"></div>
+</div>
+
+<script>
+async function login() {
+    const pass = document.getElementById("pass").value;
+
+    const res = await fetch("/login", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ password: pass })
+    });
+
+    if (!res.ok) {
+        alert("Mot de passe incorrect");
+        return;
+    }
+
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("dataBox").style.display = "block";
+
+    loadData();
+}
+
+async function loadData() {
+    const res = await fetch("/admin-data");
+    const data = await res.json();
+
+    document.getElementById("data").innerHTML =
+        data.map(r => {
+            const date = new Date(r.date).toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+            });
+
+            const slot = r.creneau;
+
+            return `
+                <div class="resa">
+                    <div>
+                        <b>${date}</b><br>
+                        ${slot}<br>
+                        ${r.prenom} ${r.nom}
+                    </div>
+                    <div class="delete" onclick="deleteResa(${r.id})">❌</div>
+                </div>
+            `;
+        }).join("");
+}
+
+async function deleteResa(id) {
+    if (!confirm("Supprimer cette réservation ?")) return;
+
+    await fetch("/delete-reservation/" + id, {
+        method: "DELETE"
+    });
+
+    loadData();
+}
+</script>
+
+</body>
+</html>
