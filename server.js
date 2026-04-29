@@ -1,11 +1,11 @@
 const express = require("express");
-const sqlite3 = require("sqlite3").verbose();
+const Database = require("better-sqlite3");
 
 const app = express();
 app.use(express.json());
 app.use(express.static("public"));
 
-const db = new sqlite3.Database("database.db");
+const db = new Database("reservations.db");
 
 const ADMIN_PASSWORD = "allordinateur";
 
