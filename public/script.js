@@ -40,7 +40,7 @@ function renderCalendar() {
     }
 
     for (let d = 1; d <= daysInMonth; d++) {
-        let dateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        let dateStr = `${year}-${month+1}-${d}`;
         let today = new Date();
         let currentDayDate = new Date(year, month, d);
 
@@ -150,7 +150,7 @@ async function reserver() {
         body: JSON.stringify({ date: selectedDate, creneau: selectedSlot, nom, prenom })
     });
 
-    alert(`Réservation confirmée : ${new Date(selectedDate + "T00:00:00").toLocaleDateString("fr-FR")} (${selectedSlot})`);
+    alert(`Réservation confirmée : ${new Date(selectedDate).toLocaleDateString("fr-FR")} (${selectedSlot})`);
 
     await loadReservations();
     renderCalendar();
