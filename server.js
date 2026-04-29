@@ -10,7 +10,7 @@ const db = new Database("reservations.db");
 const ADMIN_PASSWORD = "allordinateur";
 
 // DB
-db.run(`
+db.prepare(`
 CREATE TABLE IF NOT EXISTS reservations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date TEXT,
@@ -18,35 +18,34 @@ CREATE TABLE IF NOT EXISTS reservations (
     nom TEXT,
     prenom TEXT
 )
-`);
+`).run();
 
 // GET
 app.get("/reservations", (req, res) => {
-    db.all("SELECT * FROM reservations", [], (err, rows) => {
-        res.json(rows);
-    });
+    const rows = db.prepare("SELECT * FROM reservations").all();
+    res.json(rows);
 });
 
 // POST
 app.post("/reservation", (req, res) => {
     const { date, creneau, nom, prenom } = req.body;
 
-    db.get(
-        "SELECT * FROM reservations WHERE date = ? AND creneau = ?",
-        [date, creneau],
-        (err, row) => {
-            if (row) return res.status(400).json({ error: "Déjà réservé" });
+    const existing = db
+        .prepare("SELECT * FROM reservations WHERE date = ? AND creneau = ?")
+        .get(date, creneau);
 
-            db.run(
-                "INSERT INTO reservations (date, creneau, nom, prenom) VALUES (?, ?, ?, ?)",
-                [date, creneau, nom, prenom],
-                () => res.json({ ok: true })
-            );
-        }
-    );
+    if (existing) {
+        return res.status(400).json({ error: "Déjà réservé" });
+    }
+
+    db.prepare(
+        "INSERT INTO reservations (date, creneau, nom, prenom) VALUES (?, ?, ?, ?)"
+    ).run(date, creneau, nom, prenom);
+
+    res.json({ ok: true });
 });
 
-// ADMIN
+// ADMIN LOGIN
 app.post("/login", (req, res) => {
     if (req.body.password === ADMIN_PASSWORD) {
         res.json({ ok: true });
@@ -55,16 +54,21 @@ app.post("/login", (req, res) => {
     }
 });
 
+// ADMIN DATA
 app.get("/admin-data", (req, res) => {
-    db.all("SELECT * FROM reservations ORDER BY date", [], (err, rows) => {
-        res.json(rows);
-    });
+    const rows = db
+        .prepare("SELECT * FROM reservations ORDER BY date")
+        .all();
+
+    res.json(rows);
 });
 
+// DELETE
 app.delete("/delete-reservation/:id", (req, res) => {
-    db.run("DELETE FROM reservations WHERE id = ?", [req.params.id], function(err) {
-        res.json({ ok: true });
-    });
+    db.prepare("DELETE FROM reservations WHERE id = ?")
+      .run(req.params.id);
+
+    res.json({ ok: true });
 });
 
 const PORT = process.env.PORT || 3000;
