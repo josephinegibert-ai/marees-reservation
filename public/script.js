@@ -1,14 +1,6 @@
 function formatDateFR(dateStr) {
-    if (!dateStr) return "";
-
-    const parts = dateStr.split("-");
-    if (parts.length !== 3) return dateStr;
-
-    const year = parseInt(parts[0]);
-    const month = parseInt(parts[1]) - 1;
-    const day = parseInt(parts[2]);
-
-    const d = new Date(year, month, day);
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const d = new Date(year, month - 1, day);
 
     return d.toLocaleDateString("fr-FR", {
         day: "numeric",
@@ -154,7 +146,7 @@ function selectSlot(slot) {
 }
 
 // RESERVATION
-async function reserver() {
+async function reserver() { 
     const prenom = document.getElementById("prenom").value;
     const nom = document.getElementById("nom").value;
 
@@ -163,17 +155,39 @@ async function reserver() {
         return;
     }
 
-    await fetch("/reservation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: selectedDate, creneau: selectedSlot, nom, prenom })
-    });
+    try {
+        const response = await fetch("/reservation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                date: selectedDate,
+                creneau: selectedSlot,
+                nom: nom,
+                prenom: prenom
+            })
+        });
 
-    alert(`Votre réservation le ${formatDateFR(selectedDate)} (${selectedSlot}) est confirmée`);
+        const result = await response.json();
 
-    await loadReservations();
-    renderCalendar();
-    renderSlots();
+        if (!response.ok) {
+            alert(result.error || "Erreur lors de la réservation");
+            return;
+        }
+
+        alert(`Votre réservation le ${formatDateFR(selectedDate)} (${selectedSlot}) est confirmée`);
+
+        await loadReservations();
+        renderCalendar();
+        renderSlots();
+
+        document.getElementById("prenom").value = "";
+        document.getElementById("nom").value = "";
+        selectedSlot = null;
+
+    } catch (error) {
+        console.error(error);
+        alert("Erreur serveur");
+    }
 }
 
 // MARÉES

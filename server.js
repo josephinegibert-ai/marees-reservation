@@ -30,19 +30,22 @@ app.get("/reservations", (req, res) => {
 app.post("/reservation", (req, res) => {
     const { date, creneau, nom, prenom } = req.body;
 
-    const existing = db
-        .prepare("SELECT * FROM reservations WHERE date = ? AND creneau = ?")
-        .get(date, creneau);
-
-    if (existing) {
-        return res.status(400).json({ error: "Déjà réservé" });
+    if (!date || !creneau || !nom || !prenom) {
+        return res.status(400).json({ error: "Champs manquants" });
     }
 
-    db.prepare(
-        "INSERT INTO reservations (date, creneau, nom, prenom) VALUES (?, ?, ?, ?)"
-    ).run(date, creneau, nom, prenom);
+    try {
+        db.prepare(`
+            INSERT INTO reservations (date, creneau, nom, prenom)
+            VALUES (?, ?, ?, ?)
+        `).run(date, creneau, nom, prenom);
 
-    res.json({ ok: true });
+        res.json({ ok: true });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Erreur serveur" });
+    }
 });
 
 // ADMIN LOGIN
