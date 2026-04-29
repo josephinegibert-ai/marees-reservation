@@ -9,7 +9,7 @@ const db = new Database("reservations.db");
 
 const ADMIN_PASSWORD = "allordinateur";
 
-// DB
+// TABLE
 db.prepare(`
 CREATE TABLE IF NOT EXISTS reservations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,7 +26,7 @@ app.get("/reservations", (req, res) => {
     res.json(rows);
 });
 
-// POST
+// POST (RESERVATION)
 app.post("/reservation", (req, res) => {
     const { date, creneau, nom, prenom } = req.body;
 
@@ -34,21 +34,23 @@ app.post("/reservation", (req, res) => {
         return res.status(400).json({ error: "Champs manquants" });
     }
 
-    try {
-        db.prepare(`
-            INSERT INTO reservations (date, creneau, nom, prenom)
-            VALUES (?, ?, ?, ?)
-        `).run(date, creneau, nom, prenom);
+    const existing = db.prepare(
+        "SELECT * FROM reservations WHERE date = ? AND creneau = ?"
+    ).get(date, creneau);
 
-        res.json({ ok: true });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Erreur serveur" });
+    if (existing) {
+        return res.status(400).json({ error: "Déjà réservé" });
     }
+
+    db.prepare(`
+        INSERT INTO reservations (date, creneau, nom, prenom)
+        VALUES (?, ?, ?, ?)
+    `).run(date, creneau, nom, prenom);
+
+    res.json({ ok: true });
 });
 
-// ADMIN LOGIN
+// LOGIN
 app.post("/login", (req, res) => {
     if (req.body.password === ADMIN_PASSWORD) {
         res.json({ ok: true });
@@ -59,18 +61,13 @@ app.post("/login", (req, res) => {
 
 // ADMIN DATA
 app.get("/admin-data", (req, res) => {
-    const rows = db
-        .prepare("SELECT * FROM reservations ORDER BY date")
-        .all();
-
+    const rows = db.prepare("SELECT * FROM reservations ORDER BY date").all();
     res.json(rows);
 });
 
 // DELETE
 app.delete("/delete-reservation/:id", (req, res) => {
-    db.prepare("DELETE FROM reservations WHERE id = ?")
-      .run(req.params.id);
-
+    db.prepare("DELETE FROM reservations WHERE id = ?").run(req.params.id);
     res.json({ ok: true });
 });
 
