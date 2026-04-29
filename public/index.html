@@ -1,91 +1,253 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Réservation pêcherie</title>
-    <style>
-        body {
-            font-family: Arial;
-            text-align: center;
-            padding: 20px;
-        }
+<meta charset="UTF-8">
+<title>Réservation pêcherie</title>
 
-        #reservation {
-            margin-top: 20px;
-        }
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #dfefff, #f7fbff);
+}
 
-        input, select {
-            display: block;
-            margin: 10px auto;
-            padding: 8px;
-            width: 200px;
-        }
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+}
 
-        button {
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-    </style>
+h1 {
+    color: #0d47a1;
+}
+
+.admin-btn {
+    background: linear-gradient(135deg, #1565c0, #1e88e5);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* LAYOUT */
+.container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* CARDS */
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* COLONNES */
+.left { flex: 1.5; }
+.right { flex: 1; }
+
+/* CALENDRIER */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.day {
+    padding: 12px;
+    border-radius: 10px;
+    background: #e3f2fd;
+    cursor: pointer;
+    text-align: center;
+    transition: 0.2s;
+}
+
+.selectedDay {
+    border: 3px solid #2196f3;
+    box-sizing: border-box;
+}
+
+.weekday {
+    font-size: 14px;
+    color: #555;
+    margin-top: 4px;
+}
+
+.day:hover {
+    transform: scale(1.05);
+    background: #bbdefb;
+}
+
+.selected {
+    background: #1565c0;
+    color: white;
+}
+
+/* PANEL */
+.panel {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 15px;
+    background: #f4f9ff;
+}
+
+#slots button {
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    margin: 5px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+}
+
+.slotBtn {
+    background: #2196f3;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.slotBtn:hover {
+    background: #1976d2;
+}
+
+.slotBtn:disabled {
+    background: #ccc !important;
+    cursor: not-allowed;
+}
+
+.matin { background: linear-gradient(135deg, #43a047, #66bb6a); }
+.aprem { background: linear-gradient(135deg, #1e88e5, #42a5f5); }
+
+.selectedSlot {
+    outline: 3px solid #0d47a1;
+}
+
+input {
+    padding: 10px;
+    margin: 5px;
+    width: 45%;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.reserve-btn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #0d47a1, #1976d2);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* TABLE MARÉES */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #1565c0;
+    color: white;
+}
+
+th, td {
+    padding: 6px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+/* GROS COEFF */
+.bigCoef {
+    background: #0d47a1;
+    color: white;
+    font-weight: bold;
+}
+</style>
 </head>
+
 <body>
 
-    <h1>Réservation pêcherie</h1>
+<div class="header">
+    <h1>Réservation Pêcherie</h1>
+    <button class="admin-btn" onclick="window.location.href='admin.html'">Administrateur</button>
+</div>
 
-    <div id="reservation">
-        <h3>Réserver un créneau</h3>
+<div class="container">
 
-        <label>Date :</label>
-        <input type="date" id="date">
+    <!-- GAUCHE -->
+    <div class="left card">
 
-        <label>Créneau :</label>
-        <select id="creneau">
-            <option value="matin">Matin</option>
-            <option value="apres-midi">Après-midi</option>
-        </select>
+        <div class="calendar-header">
+            <button onclick="prevMonth()">⬅</button>
+            <h2 id="monthTitle"></h2>
+            <button onclick="nextMonth()">➡</button>
+        </div>
 
-        <input type="text" id="nom" placeholder="Nom">
-        <input type="text" id="prenom" placeholder="Prénom">
+        <div id="calendar" class="calendar"></div>
 
-        <button onclick="reserver()">Réserver</button>
+        <div class="panel">
+            <h3 id="selectedDate"></h3>
+
+            <div id="slots"></div>
+
+            <div>
+                <input id="prenom" placeholder="Prénom">
+                <input id="nom" placeholder="Nom">
+            </div>
+
+            <button class="reserve-btn" onclick="reserver()">Réserver ce créneau</button>
+        </div>
+
     </div>
 
-    <script>
-        function reserver() {
-            const date = document.getElementById("date").value;
-            const creneau = document.getElementById("creneau").value;
-            const nom = document.getElementById("nom").value;
-            const prenom = document.getElementById("prenom").value;
+    <!-- DROITE -->
+    <div class="right card">
 
-            if (!date || !nom || !prenom) {
-                alert("Merci de remplir tous les champs");
-                return;
-            }
+	<h3 id="mareeTitle"> Marées</h3>
 
-            fetch("/reservation", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    date,
-                    creneau,
-                    nom,
-                    prenom
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);
-                } else {
-                    alert("Réservation enregistrée !");
-                }
-            })
-            .catch(() => {
-                alert("Erreur serveur");
-            });
-        }
-    </script>
+        <table>
+            <thead>
+                <tr>
+                    <th>Jour</th>
+                    <th>Pleine Mer Matin</th>
+                    <th>Coef</th>
+                    <th>Pleine Mer Soir</th>
+                    <th>Coef</th>
+                    <th>Basse Mer Matin</th>
+                    <th>Basse Mer Soir</th>
+                </tr>
+            </thead>
+
+            <tbody id="mareesTable"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
 
 </body>
 </html>
