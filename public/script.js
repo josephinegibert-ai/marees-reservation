@@ -17,6 +17,9 @@ let reservations = [];
 // INIT
 async function init() {
     await loadReservations();
+
+    selectedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2,'0')}-01`;
+
     renderCalendar();
     chargerMarees();
 }
