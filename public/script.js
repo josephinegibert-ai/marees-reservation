@@ -157,7 +157,7 @@ async function reserver() {
     renderSlots();
 }
 
-// 🌊 MARÉES (AVRIL + MAI)
+// MARÉES
 function chargerMarees() {
     const month = currentDate.getMonth();
     const year = currentDate.getFullYear();
@@ -430,18 +430,18 @@ function chargerMarees() {
     }
 
 
-    let html = "";
-    data.forEach(d => {
-        html += `<tr>
-            <td>${d.j}</td>
-            <td>${d.pm1}</td>
-            <td>${d.c1}</td>
-            <td>${d.pm2}</td>
-            <td>${d.c2}</td>
-            <td>${d.bm1}</td>
-            <td>${d.bm2}</td>
-        </tr>`;
-    });
+let html = "";
+data.forEach(d => {
+    html += `<tr>
+        <td style="font-weight:bold">${d.j}</td>
+        <td>${d.pm1}</td>
+        <td style="color:red; font-weight:bold">${d.c1}</td>
+        <td>${d.pm2}</td>
+        <td style="color:red; font-weight:bold">${d.c2}</td>
+        <td>${d.bm1}</td>
+        <td>${d.bm2}</td>
+    </tr>`;
+});
 
     document.getElementById("mareesTable").innerHTML = html;
 }
