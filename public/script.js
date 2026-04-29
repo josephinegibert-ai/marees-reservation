@@ -1,3 +1,22 @@
+function formatDateFR(dateStr) {
+    if (!dateStr) return "";
+
+    const parts = dateStr.split("-");
+    if (parts.length !== 3) return dateStr;
+
+    const year = parseInt(parts[0]);
+    const month = parseInt(parts[1]) - 1;
+    const day = parseInt(parts[2]);
+
+    const d = new Date(year, month, day);
+
+    return d.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
+}
+
 let currentDate = new Date(2026, 3); // Avril par défaut
 let selectedDate = null;
 let selectedSlot = null;
@@ -40,7 +59,7 @@ function renderCalendar() {
     }
 
     for (let d = 1; d <= daysInMonth; d++) {
-        let dateStr = `${year}-${month+1}-${d}`;
+        let dateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
         let today = new Date();
         let currentDayDate = new Date(year, month, d);
 
@@ -150,7 +169,7 @@ async function reserver() {
         body: JSON.stringify({ date: selectedDate, creneau: selectedSlot, nom, prenom })
     });
 
-    alert(`Votre réservation le ${new Date(selectedDate).toLocaleDateString("fr-FR")} (${selectedSlot}) est confirmée`);
+    alert(`Votre réservation le ${formatDateFR(selectedDate)} (${selectedSlot}) est confirmée`);
 
     await loadReservations();
     renderCalendar();
