@@ -1,14 +1,3 @@
-function formatDateFR(dateStr) {
-    const [year, month, day] = dateStr.split("-").map(Number);
-    const d = new Date(year, month - 1, day);
-
-    return d.toLocaleDateString("fr-FR", {
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-    });
-}
-
 let currentDate = new Date(2026, 3); // Avril par défaut
 let selectedDate = null;
 let selectedSlot = null;
@@ -17,9 +6,6 @@ let reservations = [];
 // INIT
 async function init() {
     await loadReservations();
-
-    selectedDate = "2026-04-10";
-
     renderCalendar();
     chargerMarees();
 }
@@ -54,7 +40,7 @@ function renderCalendar() {
     }
 
     for (let d = 1; d <= daysInMonth; d++) {
-        let dateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        let dateStr = `${year}-${month+1}-${d}`;
         let today = new Date();
         let currentDayDate = new Date(year, month, d);
 
@@ -149,49 +135,26 @@ function selectSlot(slot) {
 }
 
 // RESERVATION
-async function reserver() { 
+async function reserver() {
     const prenom = document.getElementById("prenom").value;
     const nom = document.getElementById("nom").value;
-
-    console.log("DEBUG selectedDate:", selectedDate);
-    console.log("DEBUG selectedSlot:", selectedSlot);
 
     if (!selectedDate || !selectedSlot || !prenom || !nom) {
         alert("Merci de remplir tous les champs");
         return;
     }
 
-    try {
-        const response = await fetch("/reservation", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                date: selectedDate,
-                creneau: selectedSlot,
-                nom: nom,
-                prenom: prenom
-            })
-        });
+    await fetch("/reservation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date: selectedDate, creneau: selectedSlot, nom, prenom })
+    });
 
-        const result = await response.json();
+    alert(`Votre réservation le ${new Date(selectedDate).toLocaleDateString("fr-FR")} (${selectedSlot}) est confirmée`);
 
-        console.log("REPONSE SERVEUR:", result);
-
-        if (!response.ok) {
-            alert(result.error || "Erreur lors de la réservation");
-            return;
-        }
-
-        alert(`Réservation OK pour ${selectedDate}`);
-
-        await loadReservations();
-        renderCalendar();
-        renderSlots();
-
-    } catch (error) {
-        console.error(error);
-        alert("Erreur serveur");
-    }
+    await loadReservations();
+    renderCalendar();
+    renderSlots();
 }
 
 // MARÉES
