@@ -1,3 +1,22 @@
+function formatDateFR(dateStr) {
+    if (!dateStr) return "";
+
+    const parts = dateStr.split("-");
+    if (parts.length !== 3) return dateStr;
+
+    const year = parseInt(parts[0]);
+    const month = parseInt(parts[1]) - 1;
+    const day = parseInt(parts[2]);
+
+    const d = new Date(year, month, day);
+
+    return d.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
+}
+
 let currentDate = new Date(2026, 3); // Avril par défaut
 let selectedDate = null;
 let selectedSlot = null;
