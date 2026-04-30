@@ -433,11 +433,11 @@ function chargerMarees() {
     let html = "";
     data.forEach(d => {
         html += `<tr>
-            <td>${d.j}</td>
+            <td style="font-weight:bold">${d.j}</td>
             <td>${d.pm1}</td>
-            <td>${d.c1}</td>
+            <td style="color:red; font-weight:bold">${d.c1}</td>
             <td>${d.pm2}</td>
-            <td>${d.c2}</td>
+            <td style="color:red; font-weight:bold">${d.c2}</td>
             <td>${d.bm1}</td>
             <td>${d.bm2}</td>
         </tr>`;
