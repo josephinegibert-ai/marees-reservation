@@ -50,8 +50,15 @@ h1 {
 /* LAYOUT */
 .container {
     display: flex;
+    flex-direction: column;   /* empile les blocs */
+    align-items: center;      /* centre horizontalement */
     gap: 20px;
     padding: 20px;
+}
+
+.left, .right {
+    width: 100%;
+    max-width: 900px;   /* largeur max centrée */
 }
 
 /* CARDS */
@@ -78,6 +85,12 @@ h1 {
     grid-template-columns: repeat(7, 1fr);
     gap: 10px;
     margin-top: 10px;
+}
+
+h1 {
+    color: #0d47a1;
+    text-align: center;
+    width: 100%;
 }
 
 .day {
