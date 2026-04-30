@@ -18,7 +18,7 @@ let reservations = [];
 async function init() {
     await loadReservations();
 
-    selectedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2,'0')}-01`;
+    selectedDate = "2026-04-10";
 
     renderCalendar();
     chargerMarees();
@@ -153,6 +153,9 @@ async function reserver() {
     const prenom = document.getElementById("prenom").value;
     const nom = document.getElementById("nom").value;
 
+    console.log("DEBUG selectedDate:", selectedDate);
+    console.log("DEBUG selectedSlot:", selectedSlot);
+
     if (!selectedDate || !selectedSlot || !prenom || !nom) {
         alert("Merci de remplir tous les champs");
         return;
@@ -172,20 +175,18 @@ async function reserver() {
 
         const result = await response.json();
 
+        console.log("REPONSE SERVEUR:", result);
+
         if (!response.ok) {
             alert(result.error || "Erreur lors de la réservation");
             return;
         }
 
-        alert(`Votre réservation le ${formatDateFR(selectedDate)} (${selectedSlot}) est confirmée`);
+        alert(`Réservation OK pour ${selectedDate}`);
 
         await loadReservations();
         renderCalendar();
         renderSlots();
-
-        document.getElementById("prenom").value = "";
-        document.getElementById("nom").value = "";
-        selectedSlot = null;
 
     } catch (error) {
         console.error(error);
