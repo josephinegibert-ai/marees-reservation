@@ -120,11 +120,7 @@ async function loadData() {
 
     document.getElementById("data").innerHTML =
         data.map(r => {
-            const date = new Date(r.date).toLocaleDateString("fr-FR", {
-                day: "numeric",
-                month: "long",
-                year: "numeric"
-            });
+            const date = formatDateFR(r.date);
 
             const slot = r.creneau;
 
@@ -149,6 +145,17 @@ async function deleteResa(id) {
     });
 
     loadData();
+}
+
+function formatDateFR(dateStr) {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const d = new Date(year, month - 1, day);
+
+    return d.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
 }
 </script>
 
