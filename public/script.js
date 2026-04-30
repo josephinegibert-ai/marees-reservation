@@ -169,7 +169,7 @@ async function reserver() {
         body: JSON.stringify({ date: selectedDate, creneau: selectedSlot, nom, prenom })
     });
 
-    alert(`Votre réservation le ${new Date(selectedDate).toLocaleDateString("fr-FR")} (${selectedSlot}) est confirmée`);
+    alert(`Votre réservation le ${formatDateFR(selectedDate)} (${selectedSlot}) est confirmée`);
 
     await loadReservations();
     renderCalendar();
