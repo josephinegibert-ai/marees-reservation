@@ -59,7 +59,7 @@ function renderCalendar() {
     }
 
     for (let d = 1; d <= daysInMonth; d++) {
-        let dateStr = `${year}-${month+1}-${d}`;
+        let dateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
         let today = new Date();
         let currentDayDate = new Date(year, month, d);
 
