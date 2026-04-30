@@ -13,7 +13,7 @@ body {
     color: #0b2a4a;
 }
 
-/*barre du haut */
+/* 🔙 barre du haut */
 .topbar {
     display: flex;
     justify-content: flex-start;
@@ -120,7 +120,11 @@ async function loadData() {
 
     document.getElementById("data").innerHTML =
         data.map(r => {
-            const date = formatDateFR(r.date);
+            const date = new Date(r.date).toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+            });
 
             const slot = r.creneau;
 
